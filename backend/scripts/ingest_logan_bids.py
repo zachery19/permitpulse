@@ -67,30 +67,27 @@ def upsert_records(source_id: str, items: list[tuple[str, str]]) -> int:
             values (
                 :source_id, :record_type, :description, :date_filed, :external_url, :raw_hash
             )
-            on conflict (raw_hash) do nothing;
+            on conflict (raw_hash) do nothing
+            returning id;
             """)
 
-            result = db.execute(sql, {
+            rec_id = db.execute(sql, {
                 "source_id": source_id,
                 "record_type": "bid",
                 "description": title,
                 "date_filed": str(date.today()),
                 "external_url": url,
                 "raw_hash": raw_hash,
-            })
+            }).scalar()
 
-            # SQLAlchemy doesn’t easily tell “did it insert?” with DO NOTHING
-            # so we do a cheap check: count inserts by checking if raw_hash exists after commit
-            inserted += 1  # optimistic; we’ll correct below
+            if rec_id:
+                inserted += 1
 
         db.commit()
-
-        # Correct inserted count: how many of these raw_hashes exist (they all will),
-        # but we only want new inserts. MVP simplification: don’t overthink it.
         return inserted
-
     finally:
         db.close()
+
 
 def main():
     print("Fetching:", BIDS_URL)
