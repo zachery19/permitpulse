@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy import text
 from backend.app.db.session import SessionLocal
 
-SOURCE_ID = "76946197-2b7f-4d60-a1e5-cf366672666a"
+SOURCE_ID = "9be3689b-61be-4d9c-a20c-4cf8122815b8"
 BIDS_URL = "https://www.logancountyohio.gov/bids.html"
 
 def stable_hash(*parts: str) -> str:
